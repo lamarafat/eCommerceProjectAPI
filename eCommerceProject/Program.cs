@@ -1,4 +1,6 @@
 
+using eCommerceProject.BLL.Service;
+using eCommerceProject.DAL.Repositories;
 using eCommerceProject.Data;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -28,10 +30,10 @@ namespace eCommerceProject
                 new CultureInfo("ar")
             };
 
-            var connectionString =
-     builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException("Connection string"
-        + "'DefaultConnection' not found.");
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            
+
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
