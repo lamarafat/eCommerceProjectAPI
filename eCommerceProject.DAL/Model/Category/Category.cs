@@ -1,4 +1,6 @@
-﻿namespace eCommerceProject.Model.Category
+﻿using eCommerceProject.Model.Category;
+
+namespace eCommerceProject.Model.Category
 {
     
     public class Category : BaseModel

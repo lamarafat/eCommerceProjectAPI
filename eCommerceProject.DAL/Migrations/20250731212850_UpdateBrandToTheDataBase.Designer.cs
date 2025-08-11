@@ -9,11 +9,11 @@ using eCommerceProject.Data;
 
 #nullable disable
 
-namespace eCommerceProject.Migrations
+namespace eCommerceProject.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250729185205_UpdateTranslationAfterDeleteThePreviousMigration")]
-    partial class UpdateTranslationAfterDeleteThePreviousMigration
+    [Migration("20250731212850_UpdateBrandToTheDataBase")]
+    partial class UpdateBrandToTheDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,51 @@ namespace eCommerceProject.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.BrandTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
+
+                    b.ToTable("BrandTranslations");
+                });
 
             modelBuilder.Entity("eCommerceProject.Model.Category.Category", b =>
                 {
@@ -70,6 +115,17 @@ namespace eCommerceProject.Migrations
                     b.ToTable("CategoryTranslations");
                 });
 
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.BrandTranslation", b =>
+                {
+                    b.HasOne("eCommerceProject.DAL.Model.Brand.Brand", "Brand")
+                        .WithMany("BrandTranslations")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+                });
+
             modelBuilder.Entity("eCommerceProject.Model.Category.CategoryTranslation", b =>
                 {
                     b.HasOne("eCommerceProject.Model.Category.Category", "Category")
@@ -79,6 +135,11 @@ namespace eCommerceProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.Brand", b =>
+                {
+                    b.Navigation("BrandTranslations");
                 });
 
             modelBuilder.Entity("eCommerceProject.Model.Category.Category", b =>

@@ -1,4 +1,4 @@
-﻿using eCommerceProject.BLL.Service;
+﻿using eCommerceProject.BLL.Service.Interfaces;
 using eCommerceProject.DAL.Repositories;
 using eCommerceProject.Data;
 using eCommerceProject.DTO.Request;
@@ -20,7 +20,7 @@ namespace eCommerceProject.Controllers
         private readonly IStringLocalizer<SharedResource> _localizer;
         private readonly ICategoryService _categoryService;
 
-        public CategoriesController(IStringLocalizer<SharedResource> localizer, ApplicationDbContext context,ICategoryService categoryService)
+        public CategoriesController(IStringLocalizer<SharedResource> localizer, ICategoryService categoryService)
         {
             _localizer = localizer;
             _categoryService = categoryService;
@@ -42,7 +42,7 @@ namespace eCommerceProject.Controllers
         public IActionResult Create([FromBody]CategoryRequestDto request)
         {
             var category = request.Adapt<Category>();
-            _categoryService.CreateCategory(request);
+            _categoryService.Create(request);
             return Ok(new { message = _localizer["Created"].Value });
         }
         [HttpPatch("{id}")]
@@ -52,7 +52,7 @@ namespace eCommerceProject.Controllers
             try
             {
                 var translation = request.CategoryTranslations.Adapt<List<CategoryTranslation>>();
-                _categoryService.UpdateCategory(id, request);
+                _categoryService.Update(id, request);
                 return Ok(new { message = _localizer["Updated"].Value });
             }
             catch (Exception ex)
@@ -77,10 +77,10 @@ namespace eCommerceProject.Controllers
             }
         }
 
-        [HttpGet(" ")]
+        [HttpGet]
         public IActionResult GetAll([FromQuery]string lang = "en")
         {
-            var result = _categoryService.GetByLang(lang);
+            var result = _categoryService.GetAll();
             if (result is null || !result.Any())
             {
                 return NotFound(new { message = _localizer["NotFound"].Value });
@@ -91,7 +91,7 @@ namespace eCommerceProject.Controllers
         [HttpGet("all")]
         public IActionResult GetAllCategories()
         {
-            var cats = _categoryService.GetAllCategories().Adapt<List<CategoryResponseDto>>();
+            var cats = _categoryService.GetAll().Adapt<List<CategoryResponseDto>>();
             return Ok(new { message = _localizer["Success"].Value, cats });
         }
 
@@ -100,7 +100,7 @@ namespace eCommerceProject.Controllers
         {
             try
             {
-               var delete =  _categoryService.DeleteCategory(id);
+               var delete =  _categoryService.Delete(id);
                 return Ok(new { message = _localizer["Deleted"].Value });
             }
             catch (Exception ex)
