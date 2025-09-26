@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Stripe;
 using System.Globalization;
 using System.Text;
 
@@ -56,21 +57,40 @@ namespace eCommerceProject
                 Options.Password.RequireUppercase = true;
                 Options.Password.RequireNonAlphanumeric = false;
                 Options.User.RequireUniqueEmail = true; 
+                Options.Lockout.MaxFailedAccessAttempts = 5;
+                Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             //  Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            var userPolicy = " ";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: userPolicy, policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
             //  Register Repositories & Services
             builder.Services.AddScoped<IBrandRepository, BrandRepository>();
             builder.Services.AddScoped<IBrandService, BrandService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IProductService, BLL.Service.Classes.ProductService>();
+            builder.Services.AddScoped<IFileService, BLL.Service.Classes.FileService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<ReportService>();
+            builder.Services.AddScoped<ICheckoutRepository, CheckoutRepository>();
+            builder.Services.AddScoped<ICheckoutService, BLL.Service.Classes.CheckoutService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IReviewService, BLL.Service.Classes.ReviewService>();
 
 
             //  Register SeedData
@@ -97,6 +117,8 @@ namespace eCommerceProject
         });
 
             builder.Services.AddOpenApi();
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             var app = builder.Build();
 
@@ -119,7 +141,8 @@ namespace eCommerceProject
                 app.MapScalarApiReference();
 
             }
-
+            app.UseAuthentication();
+            app.UseCors(userPolicy);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

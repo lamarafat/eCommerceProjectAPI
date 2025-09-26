@@ -1,7 +1,10 @@
 ﻿using eCommerceProject.DAL.Model;
 using eCommerceProject.DAL.Model.Brand;
+using eCommerceProject.DAL.Model.Cart;
 using eCommerceProject.DAL.Model.Category;
+using eCommerceProject.DAL.Model.Order;
 using eCommerceProject.DAL.Model.Products;
+using eCommerceProject.DAL.Model.Reviews;
 using eCommerceProject.Model.Category;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -22,7 +25,11 @@ namespace eCommerceProject.Data
         public DbSet<BrandAlt> BrandAlts { get; set; }
         public DbSet<BrandTranslation> BrandTranslations { get; set; }
         public DbSet<Product> Products { get; set; }
-
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

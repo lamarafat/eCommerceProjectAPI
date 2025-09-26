@@ -10,6 +10,7 @@ using eCommerceProject.BLL.Service.Interfaces;
 using eCommerceProject.DAL.DTO.Request;
 using eCommerceProject.DAL.DTO.Response;
 using eCommerceProject.DAL.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
@@ -22,12 +23,14 @@ namespace eCommerceProject.BLL.Service.Classes
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailSender emailSender)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _configuration = configuration;
             _emailSender = emailSender;
+            _signInManager = signInManager;
         }
 
         public async Task<UserResponse> LoginAsync(LoginRequest request)
@@ -46,10 +49,29 @@ namespace eCommerceProject.BLL.Service.Classes
             {
                 throw new Exception("Invalid email or password.");
             }
-            return new UserResponse
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, true);
+            if (result.Succeeded)
             {
-                Token = await CreateTokenAsync(user),
-            };
+                return new UserResponse
+                {
+                    Token = await CreateTokenAsync(user),
+                };
+            }
+            else if (result.IsLockedOut)
+            {
+                throw new Exception("your account is locked");
+            }
+            else if(result.IsNotAllowed)
+            {
+                throw new Exception("Please confirm your email");
+            }
+            else
+            {
+                throw new Exception("Please confirm your email");
+            }
+            
+
         }
 
         public async Task<string> ConfirmEmail(string token, string userId)
@@ -66,7 +88,7 @@ namespace eCommerceProject.BLL.Service.Classes
             }
             return "Email confirmation failed. Please try again later.";
         }
-        public async Task<UserResponse> RegisterAsync(RegisterRequest request)
+        public async Task<UserResponse> RegisterAsync(RegisterRequest request, HttpRequest httpRequest)
         {
             var user = new ApplicationUser()
             {
@@ -80,7 +102,8 @@ namespace eCommerceProject.BLL.Service.Classes
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var escapedToken = Uri.EscapeDataString(token);
-                var emailUrl = $"https://localhost:7131/api/Identity/Account/ConfirmEmail?token={escapedToken}&userId={user.Id}";
+                var emailUrl = $"{httpRequest.Scheme}//{httpRequest.Host}/api/Identity/Account/ConfirmEmail?token={escapedToken}&userId={user.Id}";
+                await _userManager.AddToRoleAsync(user, "Customer");
                 await _emailSender.SendEmailAsync(user.Email, "Welcome", $"Hello {user.UserName},Please confirm your email by clicking here: <a href='{emailUrl}'>Confirm</a>");
                 return new UserResponse
                 {

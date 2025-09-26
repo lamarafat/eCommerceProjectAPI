@@ -12,8 +12,8 @@ using eCommerceProject.Data;
 namespace eCommerceProject.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250801182204_initial")]
-    partial class initial
+    [Migration("20250902141213_initFix")]
+    partial class initFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,6 +78,12 @@ namespace eCommerceProject.DAL.Migrations
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeResetPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CodeResetPasswordExpiration")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -163,6 +169,33 @@ namespace eCommerceProject.DAL.Migrations
                     b.ToTable("Brands");
                 });
 
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.BrandAlt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandAlts");
+                });
+
             modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.BrandTranslation", b =>
                 {
                     b.Property<int>("Id")
@@ -187,6 +220,141 @@ namespace eCommerceProject.DAL.Migrations
                     b.HasIndex("BrandId");
 
                     b.ToTable("BrandTranslations");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Cart.Cart", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Category.CategoryAlt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryAlts");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CarrierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Products.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("eCommerceProject.Model.Category.Category", b =>
@@ -260,6 +428,53 @@ namespace eCommerceProject.DAL.Migrations
                     b.Navigation("Brand");
                 });
 
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Cart.Cart", b =>
+                {
+                    b.HasOne("eCommerceProject.DAL.Model.Products.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eCommerceProject.DAL.Model.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Order.Order", b =>
+                {
+                    b.HasOne("eCommerceProject.DAL.Model.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Products.Product", b =>
+                {
+                    b.HasOne("eCommerceProject.DAL.Model.Brand.BrandAlt", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId");
+
+                    b.HasOne("eCommerceProject.DAL.Model.Category.CategoryAlt", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("eCommerceProject.Model.Category.CategoryTranslation", b =>
                 {
                     b.HasOne("eCommerceProject.Model.Category.Category", "Category")
@@ -274,6 +489,16 @@ namespace eCommerceProject.DAL.Migrations
             modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.Brand", b =>
                 {
                     b.Navigation("BrandTranslations");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Brand.BrandAlt", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("eCommerceProject.DAL.Model.Category.CategoryAlt", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("eCommerceProject.Model.Category.Category", b =>

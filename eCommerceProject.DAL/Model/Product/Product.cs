@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using eCommerceProject.Model;
 using eCommerceProject.DAL.Model.Category;
 using eCommerceProject.DAL.Model.Brand;
+using eCommerceProject.DAL.Model.Reviews;
 
 namespace eCommerceProject.DAL.Model.Products
 {
@@ -23,6 +24,8 @@ namespace eCommerceProject.DAL.Model.Products
         public CategoryAlt Category { get; set; }
         public int? BrandId { get; set; }
         public BrandAlt? Brand { get; set; }
+        public List<ProductImage> SubImages { get; set; } = new List<ProductImage>();
+        public List<Review> Reviews { get; set; } = new List<Review>();
 
 
     }

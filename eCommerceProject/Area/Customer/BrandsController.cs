@@ -1,4 +1,5 @@
 ﻿using eCommerceProject.BLL.Service.Classes;
+using eCommerceProject.DAL.DTO.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,5 +30,8 @@ namespace eCommerceProject.PL.Area.Customer
         }
         [HttpGet]
         public IActionResult GetAll() => Ok(_brandService.GetAll(true));
+
+        
     }
+
 }

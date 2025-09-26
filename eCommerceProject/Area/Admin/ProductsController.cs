@@ -20,7 +20,11 @@ namespace eCommerceProject.PL.Area.Admin
             _productService = productService;
         }
         [HttpGet]
-        public IActionResult GetAll() => Ok(_productService.GetAll());
+        public IActionResult GetAll([FromBody] int pageNumber = 1, [FromBody] int pageSize = 5)
+        {
+            var products = _productService.GetAllProduct(Request, false, pageNumber, pageSize);
+            return Ok(products);
+        }
         [HttpPost("CreateProduct")]
         public async Task<IActionResult> Create([FromForm] ProductRequest request)
         {

@@ -13,6 +13,6 @@ namespace eCommerceProject.DAL.DTO.Response
         public string Name { get; set; }
         [JsonIgnore]
         public string ImageUrl { get; set; }
-        public string MainImageUrl => $"https://localhost:7131/images/{ImageUrl}";
+        public string MainImageUrl => $"https://lamashop.runasp.net/images/{ImageUrl}";
     }
 }

@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using eCommerceProject.DAL.DTO.Request;
 using eCommerceProject.DAL.DTO.Response;
+using Microsoft.AspNetCore.Http;
 
 namespace eCommerceProject.BLL.Service.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task <UserResponse> RegisterAsync(RegisterRequest request);
+        Task <UserResponse> RegisterAsync(RegisterRequest request, HttpRequest httpRequest);
         Task<string> ConfirmEmail(string token, string userId);
         Task<UserResponse> LoginAsync(LoginRequest request);
 

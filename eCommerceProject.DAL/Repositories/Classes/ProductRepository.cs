@@ -7,6 +7,7 @@ using eCommerceProject.DAL.Repositories.Interfaces;
 using eCommerceProject.Data;
 using eCommerceProject.DAL.Model.Brand;
 using eCommerceProject.DAL.Model.Products;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceProject.DAL.Repositories.Classes
 {
@@ -21,6 +22,25 @@ namespace eCommerceProject.DAL.Repositories.Classes
 
         }
 
-        
+        public async Task DecreaseQuantityAsync(List<(int productId, int quantity)> items)
+        {
+            var productIds = items.Select(i => i.productId).ToList();
+            var products = await _context.Products.Where(p => productIds.Contains(p.Id)).ToListAsync();
+            foreach (var product in products)
+            {
+                var item = items.First(i => i.productId == product.Id);
+                if (product.StockQuantity < item.quantity)
+                {
+                    throw new Exception("no enough stock quantity");
+                }
+                product.StockQuantity -= item.quantity;
+            }
+            await _context.SaveChangesAsync();
+
+        }
+        public async Task<List<Product>> GetAllProductWithImage()
+        {
+            return await _context.Products.Include(p => p.SubImages).Include(p => p.Reviews).ThenInclude(r => r.User).ToListAsync();
+        }
     }
 }

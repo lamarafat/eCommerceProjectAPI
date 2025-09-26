@@ -20,7 +20,7 @@ namespace eCommerceProject.PL.Area.Identity
         [HttpPost("Register")]
         public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
         {
-            var result = await _authintecationService.RegisterAsync(request);
+            var result = await _authintecationService.RegisterAsync(request, Request);
             return Ok(result);
         }
         [HttpPost("Login")]

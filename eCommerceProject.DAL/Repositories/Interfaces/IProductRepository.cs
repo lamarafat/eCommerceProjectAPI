@@ -11,6 +11,7 @@ namespace eCommerceProject.DAL.Repositories.Interfaces
     public interface IProductRepository : IGenericRepository<Product>
     {
 
-
+        Task DecreaseQuantityAsync(List<(int productId, int quantity)> items);
+        Task<List<Product>> GetAllProductWithImage();
     }
 }
