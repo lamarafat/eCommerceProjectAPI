@@ -47,6 +47,12 @@ namespace eCommerceProject
             //  Database
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Configuration.AddUserSecrets<Program>();
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var jwtKey = builder.Configuration["Jwt:SecretKey"];
+            var gmailPassword = builder.Configuration["GmailPassword"];
+            var stripeKey = builder.Configuration["Stripe:SecretKey"];
+
 
             //  Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
